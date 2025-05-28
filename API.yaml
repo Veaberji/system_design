@@ -1,0 +1,475 @@
+openapi: 3.0.4
+info:
+  title: REST API for social network - OpenAPI 3.0
+  description: |-
+    Design a REST API for a social network with the following operations:
+    - adding and deleting friends;
+    - viewing user friends;
+    - viewing user profile;
+    - publishing a post to a feed;
+    - uploading media files for posts;
+    - viewing a feed of posts (home and users);
+    - viewing user dialogs and chats;
+    - sending and reading messages in dialogs and chats.
+
+  termsOfService: http://swagger.io/terms/
+  version: 1.0.0
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: https://mysn.swagger.io/api/v1
+tags:
+  - name: friend
+    description: Everything about your Friends
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io
+paths:
+  /friends:
+    post:
+      tags:
+        - friend
+      summary: Add a friend
+      description: Add a friend by Id
+      operationId: addFriend
+      requestBody:
+        description: Add a friend by Id
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFriend'
+        required: true
+      responses:
+        '204':
+          description: Successful operation
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Friend not found
+        '500':
+          description: Server error
+      security:
+        - api_auth:
+            - write:friends
+            - read:friends
+
+  /friends/{friendId}:
+    delete:
+      tags:
+        - friend
+      summary: Deletes a friend
+      description: delete a friend
+      operationId: deleteFriend
+      parameters:
+        - name: friendId
+          in: path
+          description: Friend id to delete
+          required: true
+          schema:
+            type: string
+            format: guid
+      responses:
+        '204':
+          description: Successful operation
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Friend not found
+        '500':
+          description: Server error
+      security:
+        - api_auth:
+            - write:friends
+            - read:friends
+
+  /users/{userId}/friends:
+    get:
+      tags:
+        - user
+      summary: Returns friends for user
+      description: Get friends for user
+      operationId: getFriend
+      parameters:
+        - name: userId
+          in: path
+          description: User id
+          required: true
+          schema:
+            type: string
+            format: guid
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Friend'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Friend not found
+        '500':
+          description: Server error
+      security:
+        - api_auth:
+            - write:users
+            - read:users
+
+  /users/{userId}:
+    get:
+      tags:
+        - user
+      summary: Returns user profile
+      description: Get user profile
+      operationId: getUser
+      parameters:
+        - name: userId
+          in: path
+          description: User id
+          required: true
+          schema:
+            type: string
+            format: guid
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Friend not found
+        '500':
+          description: Server error
+      security:
+        - api_auth:
+            - write:users
+            - read:users
+
+  /posts:
+    post:
+      tags:
+        - post
+      summary: Create a post
+      description: Create a post
+      operationId: createPost
+      requestBody:
+        description: Create a post
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePost'
+        required: true
+      responses:
+        '204':
+          description: Successful operation
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Friend not found
+        '500':
+          description: Server error
+      security:
+        - api_auth:
+            - write:posts
+            - read:posts
+
+  /posts/feed/{feedId}:
+    get:
+      tags:
+        - post
+      summary: Get posts from feed
+      description: Create a post
+      operationId: getPosts
+      parameters:
+        - name: feedId
+          in: path
+          description: feed id
+          required: true
+          schema:
+            type: string
+            format: guid
+      responses:
+        '204':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Friend not found
+        '500':
+          description: Server error
+      security:
+        - api_auth:
+            - write:posts
+            - read:posts
+
+  /messages:
+    post:
+      tags:
+        - message
+      summary: Send a message
+      description: Create a message
+      operationId: createMessage
+      requestBody:
+        description: Create a message
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMessage'
+        required: true
+      responses:
+        '204':
+          description: Successful operation
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Friend not found
+        '500':
+          description: Server error
+      security:
+        - api_auth:
+            - write:posts
+            - read:posts
+
+  /messages/{messageId}:
+    get:
+      tags:
+        - message
+      summary: Get a message
+      description: Get a message
+      operationId: getMessage
+      parameters:
+        - name: messageId
+          in: path
+          description: message Id
+          required: true
+          schema:
+            type: string
+            format: guid
+      responses:
+        '204':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Friend not found
+        '500':
+          description: Server error
+      security:
+        - api_auth:
+            - write:messages
+            - read:messages
+
+  /messages/dialog/{dialogId}:
+    get:
+      tags:
+        - message
+      summary: Get messages from dialog
+      description: Get messages from dialog
+      operationId: getDialog
+      parameters:
+        - name: dialogId
+          in: path
+          description: dialog id
+          required: true
+          schema:
+            type: string
+            format: guid
+      responses:
+        '204':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Friend not found
+        '500':
+          description: Server error
+      security:
+        - api_auth:
+            - write:messages
+            - read:messages
+
+  /files:
+    post:
+      tags:
+        - file
+      summary: Upload a file
+      description: Upload a file
+      operationId: upload
+      requestBody:
+        description: Upload a file
+        content:
+          parameters:
+            schema:
+              type: string
+              format: byte
+        required: true
+      responses:
+        '204':
+          description: Successful operation
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Friend not found
+        '500':
+          description: Server error
+      security:
+        - api_auth:
+            - write:posts
+            - read:posts
+
+components:
+  schemas:
+    CreateFriend:
+      type: object
+      properties:
+        friendId:
+          type: string
+          format: guid
+          example: '1d3ad582-201f-4526-ae75-72b276310eb8'
+    Friend:
+      type: object
+      properties:
+        friendId:
+          type: string
+          format: guid
+          example: '1d3ad582-201f-4526-ae75-72b276310eb8'
+        name:
+          type: string
+          example: 'John'
+        phone:
+          type: string
+          example: '123-45-67'
+    CreatePost:
+      type: object
+      properties:
+        creatorId:
+          type: string
+          format: guid
+          example: '1d3ad582-201f-4526-ae75-72b276310eb8'
+        text:
+          type: string
+          example: 'Some post text'
+        media:
+          type: string
+          format: byte
+    Post:
+      type: object
+      properties:
+        creatorId:
+          type: string
+          format: guid
+          example: '1d3ad582-201f-4526-ae75-72b276310eb8'
+        text:
+          type: string
+          example: 'Some post text'
+        media:
+          type: string
+          format: byte
+        dateCreated:
+          type: string
+          format: date
+    CreateMessage:
+      type: object
+      properties:
+        creatorId:
+          type: string
+          format: guid
+          example: '1d3ad582-201f-4526-ae75-72b276310eb8'
+        text:
+          type: string
+          example: 'Some post text'
+        media:
+          type: string
+          format: byte
+        toDialogId:
+          type: string
+          format: guid
+          example: '1d3ad582-201f-4526-ae75-72b276310eb8'
+
+    Message:
+      type: object
+      properties:
+        creatorId:
+          type: string
+          format: guid
+          example: '1d3ad582-201f-4526-ae75-72b276310eb8'
+        text:
+          type: string
+          example: 'Some post text'
+        media:
+          type: string
+          format: byte
+        authorId:
+          type: string
+          format: guid
+          example: '1d3ad582-201f-4526-ae75-72b276310eb8'
+        dialogId:
+          type: string
+          format: guid
+          example: '1d3ad582-201f-4526-ae75-72b276310eb8'
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: guid
+          example: '1d3ad582-201f-4526-ae75-72b276310eb8'
+        username:
+          type: string
+          example: theUser
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: James
+        email:
+          type: string
+          example: john@email.com
+        phone:
+          type: string
+          example: '12345'
+        userStatus:
+          type: integer
+          description: User Status
+          format: int32
+          example: 1
+
+  securitySchemes:
+    api_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://mysn.swagger.io/oauth/authorize
+          scopes:
+            write:friends: modify friends in your account
+            read:friends: read your friends
+            write:users: modify your account
+            read:users: read your account
+            write:posts: modify your posts
+            read:posts: read posts
+            write:messages: modify messages
+            read:messages: read messages
