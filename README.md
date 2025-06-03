@@ -11,6 +11,8 @@ Design a REST API for a social network with the following operations:
 - viewing user dialogs and chats
 - sending and reading messages in dialogs and chats
 
+[Visualize OpenAPI scheme (copy and paste API.yaml)](https://forge.etsi.org/swagger/editor/)
+
 # DB
 
 Design a database for a social network:
