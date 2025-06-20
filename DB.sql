@@ -22,7 +22,8 @@ CREATE TABLE "Messages" (
   "AuthorId" guid,
   "ChatId" guid,
   "Text" string,
-  "IsSeen" bool
+  "IsSeen" bool,
+  "DateCreated" timestamp
 );
 
 CREATE TABLE "Chats" (
@@ -63,6 +64,7 @@ CREATE TABLE "Tags" (
 CREATE TABLE "Likes" (
   "Id" guid PRIMARY KEY,
   "UserId" guid,
+  "PostId" guid,
   "TypeId" guid
 );
 
@@ -91,17 +93,17 @@ CREATE TABLE "Relations" (
   "Text" string
 );
 
-ALTER TABLE "Likes" ADD FOREIGN KEY ("TypeId") REFERENCES "LikeTypes" ("Id");
-
 ALTER TABLE "Posts" ADD FOREIGN KEY ("UserId") REFERENCES "Users" ("Id");
 
-ALTER TABLE "Media" ADD FOREIGN KEY ("Id") REFERENCES "Posts" ("Id");
+ALTER TABLE "Media" ADD FOREIGN KEY ("PostId") REFERENCES "Posts" ("Id");
 
-ALTER TABLE "Tags" ADD FOREIGN KEY ("Id") REFERENCES "Posts" ("Id");
+ALTER TABLE "Tags" ADD FOREIGN KEY ("PostId") REFERENCES "Posts" ("Id");
 
-ALTER TABLE "Likes" ADD FOREIGN KEY ("Id") REFERENCES "Posts" ("Id");
+ALTER TABLE "Likes" ADD FOREIGN KEY ("PostId") REFERENCES "Posts" ("Id");
 
 ALTER TABLE "Comments" ADD FOREIGN KEY ("PostId") REFERENCES "Posts" ("Id");
+
+ALTER TABLE "Comments" ADD FOREIGN KEY ("UserId") REFERENCES "Users" ("Id");
 
 ALTER TABLE "UserChats" ADD FOREIGN KEY ("UserId") REFERENCES "Users" ("Id");
 
@@ -111,4 +113,10 @@ ALTER TABLE "Messages" ADD FOREIGN KEY ("ChatId") REFERENCES "Chats" ("Id");
 
 ALTER TABLE "UserRelations" ADD FOREIGN KEY ("RelationId") REFERENCES "Relations" ("Id");
 
+ALTER TABLE "Users" ADD FOREIGN KEY ("Id") REFERENCES "Messages" ("AuthorId");
+
+ALTER TABLE "Users" ADD FOREIGN KEY ("Id") REFERENCES "Likes" ("UserId");
+
 ALTER TABLE "UserRelations" ADD FOREIGN KEY ("UserId") REFERENCES "Users" ("Id");
+
+ALTER TABLE "Likes" ADD FOREIGN KEY ("TypeId") REFERENCES "LikeTypes" ("Id");

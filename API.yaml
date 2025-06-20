@@ -166,7 +166,7 @@ paths:
               $ref: '#/components/schemas/CreatePost'
         required: true
       responses:
-        '204':
+        '200':
           description: Successful operation
         '400':
           description: Invalid ID supplied
@@ -184,7 +184,7 @@ paths:
       tags:
         - post
       summary: Get posts from feed
-      description: Create a post
+      description: Get a feed of posts
       operationId: getPosts
       parameters:
         - name: feedId
@@ -195,7 +195,34 @@ paths:
             type: string
             format: guid
       responses:
-        '204':
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Friend not found
+        '500':
+          description: Server error
+      security:
+        - api_auth:
+            - write:posts
+            - read:posts
+
+  /posts/myFeed:
+    get:
+      tags:
+        - post
+      summary: Get posts from feed of a current user
+      description: Get posts from feed of a current user, userId comes from JWT
+      operationId: getPosts
+      responses:
+        '200':
           description: Successful operation
           content:
             application/json:
@@ -258,7 +285,7 @@ paths:
             type: string
             format: guid
       responses:
-        '204':
+        '200':
           description: Successful operation
           content:
             application/json:
@@ -291,7 +318,7 @@ paths:
             type: string
             format: guid
       responses:
-        '204':
+        '200':
           description: Successful operation
           content:
             application/json:
@@ -411,10 +438,6 @@ components:
     Message:
       type: object
       properties:
-        creatorId:
-          type: string
-          format: guid
-          example: '1d3ad582-201f-4526-ae75-72b276310eb8'
         text:
           type: string
           example: 'Some post text'
